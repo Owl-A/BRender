@@ -7,12 +7,6 @@
 (provide len2)
 (provide normalise)
 (provide cross)
-(provide epsilon -epsilon 1epsilon bias)
-(provide make-orthonormal-to)
-
-(define epsilon (expt 10 -9))(define -epsilon (- 0 epsilon))(define 1epsilon (+ 1 epsilon))
-
-(define bias (expt 10 -4))
 
 ;;; 3D vector library
 
@@ -70,8 +64,3 @@
      (- (* z1 x2) (* z2 x1))
      (- (* x1 y2) (* x2 y1))
           )])
-
-(define (make-orthonormal-to v1 v2)
-  [let [[temp (subs v2
-        (scale (/ (dot v1 v2) (len2 v1)) v1))]]
-    (normalise (len2 temp) temp)])
