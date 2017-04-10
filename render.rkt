@@ -23,20 +23,20 @@
        [z_ (normalise leng2 temp)]
        [y_ (make-orthonormal-to z_ temp_y)]
        [x_ (cross y_ z_)]]
-    (define ret-x (scale (- 0 aspect) x_))
-    (define ret-y (scale -1 y_))
     (define del-x (scale (/ aspect image-hgt) x_)); delta-x
     (define del-y (scale (/ -1 image-hgt) y_)); delta-y
-    (field [base (add (add (add z_ (add (scale 0.5 y_) (scale (* -0.5 aspect) x_)))
+    (define ret-x (subs (scale (- 0 aspect) x_) del-x))
+    (define ret-y (subs (scale -1 y_) del-y))
+    (field [base (subs (subs (add z_ (add (scale 0.5 y_) (scale (* -0.5 aspect) x_)))
                       (scale 0.5 del-x)) (scale 0.5 del-y))])
     [super-new]
     (define/public (get-next-ray)
       (begin
         ;return ray :- to be added
         (cond ((< ctr-x image-wid) (begin
-                                     (get-field base this)
                                      (set! ctr-x (+ ctr-x 1))
-                                     (set! base (add base del-x))))
+                                     (set! base (add base del-x))
+                                     base))
               ((< ctr-y image-hgt) (begin (set! ctr-x 0)
                                           (set! ctr-y (+ ctr-y 1))
                                           (set! base (add base (add ret-x del-y)))
