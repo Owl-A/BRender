@@ -1,13 +1,16 @@
 #lang racket
 
-#lang racket
-
 (require "vectorLib.rkt" "matrixLib.rkt" "primitives.rkt" racket/draw)
 (struct color (red green blue) #:transparent )
 
-;(define (render Scene cam shaders Scr)
-;  
-;  )
+(define (render Scene lights cam shader)
+  (define Scr (send cam init-screen))
+  (define (ren-loop)
+    [let[[new-ray (send cam get-next-ray)]]
+      (if (= new-ray 'done) (send Scr save-buffer)
+          (begin  ; code to render 1 single pixel
+            (ren-loop)))])
+  (ren-loop))
 
 (define Screen%
   (class object%
@@ -60,16 +63,17 @@
         (cond ((< ctr-x img-wid-1) (begin
                                      (set! ctr-x (+ ctr-x 1))
                                      (set! base (add base del-x))
-                                     (make-ray from (subs base from))))
+                                     (cons (cons ctr-x ctr-y) (make-ray from (subs base from)))))
               ((< ctr-y img-hgt-1) (begin (set! ctr-x 0)
                                           (set! ctr-y (+ ctr-y 1))
                                           (set! base (add (add base ret-x) del-y))
-                                          (make-ray from (subs base from))
+                                          (cons (cons ctr-x ctr-y) (make-ray from (subs base from)))
                                           ))
               (else (begin (set! ctr-x -1)
                            (set! ctr-y 0)
                            (set! base (add base (add
                                                  (subs ret-x del-x) ret-y)))
-                           'done))));keep track of position
-    ))); apparently superfluous state variables are being added as a memory tradeoff for less time complexity
+                           'done)))));keep track of position
+    (define/public (init-screen) (new Screen% [l image-wid] [b image-hgt]))
+    )); apparently superfluous state variables are being added as a memory tradeoff for less time complexity
 
