@@ -9,7 +9,7 @@
 (define (make-ray origin direction)
     (ray origin (normalise (len2 direction ) direction )))
 
-(struct material (reflect refract absorb color emit-color) #:transparent)          ;;add to this with increase in fields in primitive
+(struct material (reflect refract absorb color emit-color) #:transparent)   ;;add to this with increase in fields in primitive
 
 (struct color (red green blue) #:transparent )
 
@@ -22,7 +22,7 @@
                 Krf
                 Kab
                 color
-                emit-color
+		emit-color
                 ;more to come
                 )
     (define/public (intersect? ray) (send mesh intersect? ray))
@@ -68,9 +68,7 @@
 (define triangle%
   (class mesh%
     (super-new)
-    (init-field P1
-                P2
-                P3)
+    (init-field P1 P2 P3)
     (field [s1 (subs P2 P1)]
            [s2 (subs P3 P1)]
            [normal
@@ -92,27 +90,34 @@
               [v (/ Q.D P.s1)]]
             (if (and (>=  u -epsilon) (>= v -epsilon) (<= (+ u v) 1epsilon))
                 (list (list (add P1  (add (scale u s1) (scale v s2))))
-                      (list normal))
+                      (list (normal? u v)))
                 #f)]
             )])
-    (define (normal?) normal)
+    (define (normal? u v) normal)
     (override intersect?)
     (override normal?)))
 
+; smooth shading using linear interpolation
+(define smooth-triangle% 
+  (class triangle%
+    (super-new)
+    (init-field nP1 nP2 nP3)
+    (define (normal? u v)
+      (add (add (scale (- 1 (+ u v)) nP1) (scale u nP2)) (scale v nP3)))
+    (override normal?)
+    ))
+
 ;for my convenience only
 ;reflection of point 2 (P2) is taken in line P1 P3
+
 (define parrallelogram%
   (class mesh%
     (super-new)
-    (init-field P1
-                P2
-                P3)
+    (init-field P1 P2 P3)
     (field [P4 (subs (add P1 P3) P2)]
            [T1 (new triangle% [P1 P1] [P2 P2] [P3 P3])]
            [T2 (new triangle% [P1 P1] [P2 P4] [P3 P3])])
     (define (intersect? ray)
       [let[(p1 (send T1 intersect? ray))]
         (if p1 p1 (send T2 intersect? ray))] )
-    (define (normal?) (send T1 normal?))
-    (override normal?)
     (override intersect?)))

@@ -1,7 +1,7 @@
 #lang racket
 (require "vectorLib.rkt")
 (require "matrixLib.rkt")
-(provide material color ray make-ray smooth-sphere%)
+(provide material color ray make-ray smooth-sphere% color-red color-green color-blue)
 
 
 (struct ray (origin direction) #:transparent )

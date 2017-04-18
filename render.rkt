@@ -1,14 +1,16 @@
 #lang racket
 
-(require "vectorLib.rkt" "matrixLib.rkt" "primitives.rkt" racket/draw)
-(struct color (red green blue) #:transparent )
+(require "vectorLib.rkt" "matrixLib.rkt" "primitives.rkt" "shaders.rkt" racket/draw)
 
-(define (render Scene lights cam shader)
+(define (render Scene cam)
   (define Scr (send cam init-screen))
+  (define shader (lambda (ray) (tracer ray Scene)))
   (define (ren-loop)
     [let[[new-ray (send cam get-next-ray)]]
-      (if (= new-ray 'done) (send Scr save-buffer)
-          (begin  ; code to render 1 single pixel
+      (if (eq? new-ray 'done) (send Scr save-buffer)
+          (begin
+            (send Scr paint (caar new-ray) (cdar new-ray) (shader (cdr new-ray)))
+                 ; code to render 1 single pixel //TODO
             (ren-loop)))])
   (ren-loop))
 
