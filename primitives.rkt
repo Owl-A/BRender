@@ -1,7 +1,7 @@
 #lang racket
 (require "vectorLib.rkt")
 (require "matrixLib.rkt")
-(provide primitive% triangle% material color ray make-ray smooth-sphere% color-red color-green color-blue material-color multC ray-origin)
+(provide primitive% parrallelogram% triangle% material color ray make-ray smooth-sphere% color-red color-green color-blue material-color multC ray-origin addC ray-direction)
 
 (struct ray (origin direction) #:transparent )
 
@@ -16,6 +16,11 @@
 (color (exact-round (* sca (color-red col)))
        (exact-round (* sca (color-green col)))
        (exact-round (* sca (color-blue col)))))
+
+(define (addC col1 col2) ;; bugfix list->bytes works only on integers fix it
+(color (+ (color-red col1) (color-red col2))
+       (+ (color-green col1) (color-green col2))
+       (+ (color-blue col1) (color-blue col2))))
 
 ;defines an object with the properties and shape defined by a mesh object
 (define primitive%
@@ -126,4 +131,6 @@
     (define (intersect? ray)
       [let[(p1 (send T1 intersect? ray))]
         (if p1 p1 (send T2 intersect? ray))] )
-    (override intersect?)))
+    (define (normal?) 'invalid)
+    (override intersect?)
+    (override normal?)))
