@@ -63,11 +63,11 @@
         (cond ((< ctr-x img-wid-1) (begin
                                      (set! ctr-x (+ ctr-x 1))
                                      (set! base (add base del-x))
-                                     (cons (cons ctr-x ctr-y) (make-ray from (subs base from)))))
+                                     (cons (cons ctr-x ctr-y) (make-ray from base))))
               ((< ctr-y img-hgt-1) (begin (set! ctr-x 0)
                                           (set! ctr-y (+ ctr-y 1))
                                           (set! base (add (add base ret-x) del-y))
-                                          (cons (cons ctr-x ctr-y) (make-ray from (subs base from)))
+                                          (cons (cons ctr-x ctr-y) (make-ray from base))
                                           ))
               (else (begin (set! ctr-x -1)
                            (set! ctr-y 0)

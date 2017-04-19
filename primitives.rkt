@@ -55,8 +55,8 @@
                           (P2 (scale (+ comp offset) dir))
                           (P1.dir (dot P1 dir))
                           (P2.dir (dot P2 dir))]
-                     (cond ((> P1.dir 0) (list P1 (normal? P1)))
-                           (else (list P2 (normal? P2))))] #f)
+                     (cond ((> P1.dir 0) (list (add P1 orig) (normal? P1)))
+                           (else (list (add P2 orig) (normal? P2))))] #f)
         ])
     (define (normal? p)
       [let* [(normal (subs p center))
@@ -92,10 +92,11 @@
               [v (/ Q.D P.s1)]]
             (if (and (>=  u -epsilon) (>= v -epsilon) (<= (+ u v) 1epsilon))
                 (list (add P1  (add (scale u s1) (scale v s2)))
-                      (normal? u v))
+                      (normal? u v dir))
                 #f)]
             )])
-    (define (normal? u v) normal)
+    (define (normal? u v dir)
+      (if (> (dot normal dir) 0) (neg normal) normal))
     (override intersect?)
     (override normal?)))
 
@@ -104,8 +105,9 @@
   (class triangle%
     (super-new)
     (init-field nP1 nP2 nP3)
-    (define (normal? u v)
-      (add (add (scale (- 1 (+ u v)) nP1) (scale u nP2)) (scale v nP3)))
+    (define (normal? u v dir)
+      [let ((temp (add (add (scale (- 1 (+ u v)) nP1) (scale u nP2)) (scale v nP3))))
+        (if (> (dot temp dir ) 0) (neg temp) temp)])
     (override normal?)
     ))
 
