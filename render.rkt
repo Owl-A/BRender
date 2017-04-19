@@ -1,7 +1,6 @@
 #lang racket
 
-(require "vectorLib.rkt" "matrixLib.rkt" "primitives.rkt" "shaders.rkt" racket/draw)
-
+(require "vectorLib.rkt" "matrixLib.rkt" "primitives.rkt" racket/draw "shaders.rkt")
 (provide render camera%)
 (define (render Scene cam)
   (define Scr (send cam init-screen))

@@ -91,8 +91,8 @@
               [u (/ P.T P.s1)]
               [v (/ Q.D P.s1)]]
             (if (and (>=  u -epsilon) (>= v -epsilon) (<= (+ u v) 1epsilon))
-                (list (list (add P1  (add (scale u s1) (scale v s2))))
-                      (list (normal? u v)))
+                (list (add P1  (add (scale u s1) (scale v s2)))
+                      (normal? u v))
                 #f)]
             )])
     (define (normal? u v) normal)

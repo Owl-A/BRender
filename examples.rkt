@@ -8,7 +8,10 @@
        [objects (list (new primitive% [color (color 255 0 0)]
                            [mesh (new smooth-sphere% [center '(10 0 0)] [radius 5])])
                       (new primitive% [color (color 0 255 0)]
-                           [mesh (new triangle% [P1 '(4 0 10)][P2 '(4 6 -10)][P3 '(4 -6 -10)]  )]))]
+                           [mesh (new triangle% [P1 '(7 0 10)][P2 '(7 6 -10)][P3 '(7 -6 -10)]  )])
+                      (new primitive% [color (color 0 0 255)]
+                           [mesh (new triangle% [P1 '(16 0 -10)][P2 '(16 6 10)][P3 '(16 -6 10)]  )])
+                      )]
        [I-ambi 0.5]))
 
 (define Scene0

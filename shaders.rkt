@@ -19,9 +19,9 @@
 (define (check-hit stat ray1 obj)
   (define orig (ray-origin ray1))
   (define (closer a b)
-           (cond ((eq? (cdr b) #f) a)
+                  (cond ((eq? (cdr b) #f) a)
                  ((eq? a 'no) b)
-                 ((> (len2 (subs (cadr a) orig)) (len2 (subs (cadr a) orig))) b)
+                 ((> (len2 (subs (cadr a) orig)) (len2 (subs (cadr b) orig))) b)
                  (else a)))
   (if (null? obj) stat
         [let((pt (send (car obj) intersect? ray1)))
