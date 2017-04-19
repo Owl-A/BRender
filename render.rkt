@@ -2,15 +2,14 @@
 
 (require "vectorLib.rkt" "matrixLib.rkt" "primitives.rkt" "shaders.rkt" racket/draw)
 
+(provide render camera%)
 (define (render Scene cam)
   (define Scr (send cam init-screen))
-  (define shader (lambda (ray) (tracer ray Scene)))
   (define (ren-loop)
     [let[[new-ray (send cam get-next-ray)]]
       (if (eq? new-ray 'done) (send Scr save-buffer)
           (begin
-            (send Scr paint (caar new-ray) (cdar new-ray) (shader (cdr new-ray)))
-                 ; code to render 1 single pixel //TODO
+            (send Scr paint (caar new-ray) (cdar new-ray) (tracer (cdr new-ray) Scene))
             (ren-loop)))])
   (ren-loop))
 

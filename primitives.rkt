@@ -1,32 +1,32 @@
 #lang racket
 (require "vectorLib.rkt")
 (require "matrixLib.rkt")
-(provide material color ray make-ray smooth-sphere% color-red color-green color-blue)
-
+(provide primitive% triangle% material color ray make-ray smooth-sphere% color-red color-green color-blue material-color multC ray-origin)
 
 (struct ray (origin direction) #:transparent )
 
 (define (make-ray origin direction)
     (ray origin (normalise (len2 direction ) direction )))
 
-(struct material (reflect refract absorb color emit-color) #:transparent)   ;;add to this with increase in fields in primitive
+(struct material ( color) #:transparent)   ;;add to this with increase in fields in primitive
 
 (struct color (red green blue) #:transparent )
+
+(define (multC sca col) ;; bugfix list->bytes works only on integers fix it
+(color (exact-round (* sca (color-red col)))
+       (exact-round (* sca (color-green col)))
+       (exact-round (* sca (color-blue col)))))
 
 ;defines an object with the properties and shape defined by a mesh object
 (define primitive%
   (class object%
     (super-new)
     (init-field mesh
-                Kre
-                Krf
-                Kab
                 color
-		emit-color
-                ;more to come
+		;more to come
                 )
     (define/public (intersect? ray) (send mesh intersect? ray))
-    (define/public (state) (material Kre Krf Kab color emit-color))))
+    (define/public (state) (material color ))))
 
 (define mesh%
   (class object%
@@ -52,9 +52,11 @@
             (offset2 (- radius2 norm2))
             (offset (if (>= offset2 0) (sqrt offset2) #f))]
         (if offset [let* [(P1 (scale (- comp offset) dir))
-                          (P2 (scale (+ comp offset) dir))]
-                     (list (list P1 P2)
-                         (list (normal? P1) (normal? P2)))] #f)
+                          (P2 (scale (+ comp offset) dir))
+                          (P1.dir (dot P1 dir))
+                          (P2.dir (dot P2 dir))]
+                     (cond ((> P1.dir 0) (list P1 (normal? P1)))
+                           (else (list P2 (normal? P2))))] #f)
         ])
     (define (normal? p)
       [let* [(normal (subs p center))

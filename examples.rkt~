@@ -1,0 +1,7 @@
+#lang racket
+(require "render.rkt")
+; examples
+
+(define Scene1
+  (new Scene%
+       [objects (list (new primitive% ))]))
