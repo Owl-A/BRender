@@ -56,7 +56,8 @@
                           (P1.dir (dot P1 dir))
                           (P2.dir (dot P2 dir))]
                      (cond ((> P1.dir 0) (list (add P1 orig) (normal? P1)))
-                           (else (list (add P2 orig) (normal? P2))))] #f)
+                           ((> P2.dir 0) (list (add P2 orig) (normal? P2)))
+                           (else #f))] #f)
         ])
     (define (normal? p)
       [let* [(normal (subs p center))
@@ -91,8 +92,9 @@
               [u (/ P.T P.s1)]
               [v (/ Q.D P.s1)]]
             (if (and (>=  u -epsilon) (>= v -epsilon) (<= (+ u v) 1epsilon))
-                (list (add P1  (add (scale u s1) (scale v s2)))
-                      (normal? u v dir))
+                [let [(int (add P1  (add (scale u s1) (scale v s2))))]
+                      (if (> (dot (subs int orig) dir) 0)
+                          (list int (normal? u v dir)) #f)]
                 #f)]
             )])
     (define (normal? u v dir)
