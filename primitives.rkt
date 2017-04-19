@@ -1,7 +1,7 @@
 #lang racket
 (require "vectorLib.rkt")
 (require "matrixLib.rkt")
-(provide primitive% parrallelogram% triangle% material color ray make-ray smooth-sphere% color-red color-green color-blue material-color multC ray-origin addC ray-direction)
+(provide smooth-triangle% primitive% parrallelogram% triangle% material color ray make-ray smooth-sphere% color-red color-green color-blue material-color multC ray-origin addC ray-direction)
 
 (struct ray (origin direction) #:transparent )
 
@@ -113,7 +113,8 @@
     (super-new)
     (init-field nP1 nP2 nP3)
     (define (normal? u v dir)
-      [let ((temp (add (add (scale (- 1 (+ u v)) nP1) (scale u nP2)) (scale v nP3))))
+      [let* ((te (add (add (scale (- 1 (+ u v)) nP1) (scale u nP2)) (scale v nP3)))
+             (temp (normalise (len2 te) te)))
         (if (> (dot temp dir ) 0) (neg temp) temp)])
     (override normal?)
     ))
