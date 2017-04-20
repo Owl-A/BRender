@@ -27,7 +27,7 @@
                                   (neg light))]
                      [process1 (check-hit 'no shadow-ray (get-field objects Scene))]]
                 (if (eq? process1 'no)
-                    (multC (+ I-am  (* I-d (dot (neg light) (caddr process)))) col)
+                           (multC (+ I-am  (* I-d (dot (neg light) (caddr process)))) col)
                     (multC I-am col))])
         )])
 

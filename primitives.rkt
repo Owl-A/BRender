@@ -59,9 +59,11 @@
         (if offset [let* [(P1 (scale (- comp offset) dir))
                           (P2 (scale (+ comp offset) dir))
                           (P1.dir (dot P1 dir))
-                          (P2.dir (dot P2 dir))]
-                     (cond ((> P1.dir 0) (list (add P1 orig) (normal? P1)))
-                           ((> P2.dir 0) (list (add P2 orig) (normal? P2)))
+                          (P2.dir (dot P2 dir))
+                          (tP1 (add P1 orig))
+                          (tP2 (add P2 orig))]
+                     (cond ((> P1.dir 0) (list tP1 (normal? tP1)))
+                           ((> P2.dir 0) (list tP2 (normal? tP2)))
                            (else #f))] #f)
         ])
     (define (normal? p)
