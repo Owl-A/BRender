@@ -1,14 +1,15 @@
 #lang racket
 (require "vectorLib.rkt")
 (require "matrixLib.rkt")
-(provide smooth-triangle% primitive% parrallelogram% triangle% material color ray make-ray smooth-sphere% color-red color-green color-blue material-color multC ray-origin addC ray-direction)
+(provide smooth-triangle% primitive% parrallelogram% triangle% material
+         material-ambient material-diffuse color ray make-ray smooth-sphere% color-red color-green color-blue material-color multC ray-origin addC ray-direction)
 
 (struct ray (origin direction) #:transparent )
 
 (define (make-ray origin direction)
     (ray origin (normalise (len2 direction ) direction )))
 
-(struct material ( color) #:transparent)   ;;add to this with increase in fields in primitive
+(struct material ( color diffuse ambient) #:transparent)   ;;add to this with increase in fields in primitive
 
 (struct color (red green blue) #:transparent )
 
@@ -28,10 +29,12 @@
     (super-new)
     (init-field mesh
                 color
+                [kd 0.9] ;coeff diffuse lighting
+                [ka 0.1] ;coeff ambient lighting
 		;more to come
                 )
     (define/public (intersect? ray) (send mesh intersect? ray))
-    (define/public (state) (material color ))))
+    (define/public (state) (material color kd ka))))
 
 (define mesh%
   (class object%
