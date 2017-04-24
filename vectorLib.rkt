@@ -1,19 +1,14 @@
 #lang racket
 (require "matrixLib.rkt")
-(provide add)
-(provide subs)
-(provide neg)
-(provide scale)
-(provide len2)
-(provide normalise)
-(provide cross)
-(provide epsilon -epsilon 1epsilon bias)
-(provide make-orthonormal-to)
+(provide add subs neg scale len2 normalise cross epsilon -epsilon 1epsilon bias make-orthonormal-to randdir)
 
 (define epsilon (expt 10 -9))(define -epsilon (- 0 epsilon))(define 1epsilon (+ 1 epsilon))
 
 (define bias (expt 10 -4))
 
+(define (randdir)
+  [let [(te (list (random 500) (random 500) (random 500)))]
+    (normalise (len2 te) te)])
 ;;; 3D vector library
 
 ; taking a list to be a vector

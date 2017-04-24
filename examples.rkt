@@ -21,6 +21,8 @@
                       ;(new primitive% [color (color 0 0 255)]
                       ;     [mesh (new triangle% [P1 '(16 0 -10)][P2 '(16 6 10)][P3 '(16 -6 10)]  )])
                       )]
+       [lamp-center '(2 2 2)]
+       [lamp-radius 2]
        [global-light '(1 -1 -1)]))
 
 ;(define Scene0
@@ -30,7 +32,7 @@
 
 (define default-cam
   (new camera%
-       [from '(-2 2 3)]
+       [from '(0 0 0)]
        [to '(10 0 0)]
        [temp_y '(0 1 0)]
        [image-wid 400]
