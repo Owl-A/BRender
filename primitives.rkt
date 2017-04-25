@@ -31,7 +31,6 @@
                 color
                 [kd 0.9] ;coeff diffuse lighting
                 [ka 0.1] ;coeff ambient lighting
-		;more to come
                 )
     (define/public (intersect? ray) (send mesh intersect? ray))
     (define/public (state) (material color kd ka))))

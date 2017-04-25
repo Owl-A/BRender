@@ -1,6 +1,6 @@
 #lang racket
 (require "vectorLib.rkt" "matrixLib.rkt" "primitives.rkt")
-(provide Scene% depth tracer check-hit)
+(provide Scene% tracer check-hit)
 (define background-color (color 0 0 0))
 (define samples 30)
 
@@ -45,7 +45,6 @@
                       (lambda (pr ray1)
                         (shader-global this pr ray1 globallight)))])))
 
-(define depth 5) ; number of permitted hits of a ray
 (define (tracer ray1 Scene) ; ambient shader at this point
   [let ((process (check-hit 'no ray1 (get-field objects Scene))))
            (cond ((eq? process 'no) background-color)

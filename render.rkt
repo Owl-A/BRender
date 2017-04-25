@@ -24,9 +24,9 @@
             1              ; height
             (list->bytes
              (list 0                              ; alpha
-                   (color-red Clr)                ; red
-                   (color-green Clr)              ; green 
-                   (color-blue Clr)))            ; blue
+                   (max (color-red Clr) 0)                ; red
+                   (max (color-green Clr) 0)              ; green 
+                   (max (color-blue Clr) 0)))            ; blue
       ))
     (define/public (save-buffer)
       (send buffer save-file "image.png" 'png))))
