@@ -1,6 +1,6 @@
 #lang racket
 (require "vectorLib.rkt" "matrixLib.rkt" "primitives.rkt")
-(provide Scene% depth tracer)
+(provide Scene% depth tracer check-hit)
 (define background-color (color 0 0 0))
 (define samples 30)
 
@@ -16,8 +16,14 @@
     [init c r]
     [init-field [sampling-pts (repeat samples
                  (lambda (acc) (cons (add (scale (* r (random)) (randdir)) c) acc)) '())]]
-    (define/public (final-dir pt)
-      (foldr (lambda (x y) (subs y x)) (scale samples pt) sampling-pts))
+    (define/public (final-dir pt Scene)
+      (foldr (lambda (x y) ;(subs y x))
+               [let* [[dir (subs pt x)]
+                     [doubt (check-hit 'no (make-ray x dir)
+                                     (get-field objects Scene))]]
+                 (if (or (eq? doubt 'no) (>= (len2 (subs (cadr doubt) x)) (len2 dir)))
+                     (add y dir) y)])
+             '(0 0 0) sampling-pts))
     ))
 
 (define (repeat n func acc) 
@@ -28,11 +34,9 @@
   (class object%
     (super-new)
     [init-field objects]
-    [init global-light]
-    [field [vec-GlobalLight (normalise (len2 global-light) global-light)]]
     [init [lamp-center '(20 20 20)] [lamp-radius 5]]
     [field [lamp (new light% [center lamp-center] [radius lamp-radius])]]
-    (define/public (getlight p) (send (get-field sampler lamp) final-dir p))))
+    (define/public (getlight p) (send (get-field sampler lamp) final-dir p this))))
 
 (define depth 5) ; number of permitted hits of a ray
 
@@ -40,17 +44,13 @@
   [let ((process (check-hit 'no ray1 (get-field objects Scene))))
            (cond ((eq? process 'no) background-color)
                  (else [let* [[col (material-color (send (car process) state))]
-                              [templight (send Scene getlight (cadr process))]
+                              [templight (send Scene getlight (add (cadr process) (scale bias (caddr process))))]
                               [light (normalise (len2 templight) templight)]
-                              [shadow-ray (make-ray
-                                           (subs (cadr process) (scale bias (ray-direction ray1)))
-                                           (neg light))]
-                              [process1 (check-hit 'no shadow-ray (get-field objects Scene))]
                               [state (send (car process) state)]
                               [I-am (material-ambient state)]
-                              [I-d (material-diffuse state)]]
-                         (multC (+ I-am  (* I-d                   ;;;;;;;;;;;;;;;;;; # todo make get light function ;;;;;;;;;;;;;;;;
-                                            (max (dot (neg light) (caddr process)) 0))) col)]))])
+                              [I-d (material-diffuse state)]
+                              [InF (+ I-am  (* I-d (max (dot (neg light) (caddr process)) 0)))]]
+                         (multC  InF col)]))])
 
 (define (check-hit stat ray1 obj)
   (define orig (ray-origin ray1))

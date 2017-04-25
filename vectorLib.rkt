@@ -53,7 +53,8 @@
   (dot l l))
 
 (define (normalise len2l l) ; using to avoid recalculation of length
-  (scale (/ 1 (sqrt len2l)) l))
+  (if (= len2l 0) '(0 0 0)
+      (scale (/ 1 (sqrt len2l)) l)))
 
 (define (cross v1 v2)
   [let* [(v1c (cdr v1))
