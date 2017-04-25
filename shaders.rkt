@@ -33,19 +33,25 @@
 (define Scene%
   (class object%
     (super-new)
-    [init-field objects]
+    [init-field objects [mode 'distrib]]
+    [init [global '(1 -1 -1)]]
+    [field [globallight (normalise (len2 global) global)]]
     [init [lamp-center '(20 20 20)] [lamp-radius 5]]
     [field [lamp (new light% [center lamp-center] [radius lamp-radius])]]
-    (define/public (getlight p) (send (get-field sampler lamp) final-dir p this))))
+    (define/public (getlight p) (send (get-field sampler lamp) final-dir p this))
+
+    (field [shader (if (eq? mode 'distrib)
+                      (lambda (pr ray1) (shader-distrib this pr))
+                      (lambda (pr ray1)
+                        (shader-global this pr ray1 globallight)))])))
 
 (define depth 5) ; number of permitted hits of a ray
-
-(define (tracer ray1 Scene) ; ambient shader at this point 
+(define (tracer ray1 Scene) ; ambient shader at this point
   [let ((process (check-hit 'no ray1 (get-field objects Scene))))
            (cond ((eq? process 'no) background-color)
-                 (else (shader-occlusion Scene process)))])
+                 (else ((get-field shader Scene) process ray1)))])
 
-(define (shader-occlusion Scene process)
+(define (shader-distrib Scene process)
   [let* [[col (material-color (send (car process) state))]
          [templight (send Scene getlight (add (cadr process) (scale bias (caddr process))))]
          [light (normalise (len2 (car templight)) (car templight))]
@@ -55,6 +61,20 @@
          [I-d (material-diffuse state)]
          [InF (+ I-am  (* I-d intensity (max (dot (neg light) (caddr process)) 0)))]]
     (multC  InF col)])
+
+(define (shader-global Scene process ray1 light)
+  [let* [[col (material-color (send (car process) state))]
+         [neg-light (neg light)]
+         [shadow-ray (make-ray
+                      (subs (cadr process) (scale bias (ray-direction ray1)))
+                      neg-light)]
+         [process1 (check-hit 'no shadow-ray (get-field objects Scene))]
+         [state (send (car process) state)]
+         [I-am (material-ambient state)]
+         [I-d (material-diffuse state)]]
+    (if (eq? process1 'no)
+        (multC (+ I-am  (* I-d (max (dot neg-light (caddr process)) 0))) col)
+        (multC I-am col))])
 
 (define (check-hit stat ray1 obj)
   (define orig (ray-origin ray1))

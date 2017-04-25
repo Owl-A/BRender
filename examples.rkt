@@ -21,6 +21,8 @@
                        ;(new primitive% [color (color 0 0 255)]
                       ;     [mesh (new triangle% [P1 '(16 0 -10)][P2 '(16 6 10)][P3 '(16 -6 10)]  )])
                       )]
+       [mode 'distrib]
+       [global '(1 -1 -1)]
        [lamp-center '(0 10 10)]
        [lamp-radius 5]))
 
