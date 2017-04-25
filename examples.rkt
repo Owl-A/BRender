@@ -31,7 +31,7 @@
 
 (define default-cam
   (new camera%
-       [from '(0 0 0)]
+       [from '(-2 2 3)]
        [to '(10 0 0)]
        [temp_y '(0 1 0)]
        [image-wid 400]

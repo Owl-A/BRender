@@ -43,15 +43,18 @@
 (define (tracer ray1 Scene) ; ambient shader at this point 
   [let ((process (check-hit 'no ray1 (get-field objects Scene))))
            (cond ((eq? process 'no) background-color)
-                 (else [let* [[col (material-color (send (car process) state))]
-                              [templight (send Scene getlight (add (cadr process) (scale bias (caddr process))))]
-                              [light (normalise (len2 (car templight)) (car templight))]
-                              [intensity (/ (cdr templight) samples)]
-                              [state (send (car process) state)]
-                              [I-am (material-ambient state)]
-                              [I-d (material-diffuse state)]
-                              [InF (+ I-am  (* I-d intensity (max (dot (neg light) (caddr process)) 0)))]]
-                         (multC  InF col)]))])
+                 (else (shader-occlusion Scene process)))])
+
+(define (shader-occlusion Scene process)
+  [let* [[col (material-color (send (car process) state))]
+         [templight (send Scene getlight (add (cadr process) (scale bias (caddr process))))]
+         [light (normalise (len2 (car templight)) (car templight))]
+         [intensity (/ (cdr templight) samples)]
+         [state (send (car process) state)]
+         [I-am (material-ambient state)]
+         [I-d (material-diffuse state)]
+         [InF (+ I-am  (* I-d intensity (max (dot (neg light) (caddr process)) 0)))]]
+    (multC  InF col)])
 
 (define (check-hit stat ray1 obj)
   (define orig (ray-origin ray1))
