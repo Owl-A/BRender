@@ -22,8 +22,8 @@
                      [doubt (check-hit 'no (make-ray x dir)
                                      (get-field objects Scene))]]
                  (if (or (eq? doubt 'no) (>= (len2 (subs (cadr doubt) x)) (len2 dir)))
-                     (add y dir) y)])
-             '(0 0 0) sampling-pts))
+                     (cons (add (car y) dir) (+ (cdr y) 1)) y)])
+             (cons (list 0 0 0) 0) sampling-pts))
     ))
 
 (define (repeat n func acc) 
@@ -45,11 +45,12 @@
            (cond ((eq? process 'no) background-color)
                  (else [let* [[col (material-color (send (car process) state))]
                               [templight (send Scene getlight (add (cadr process) (scale bias (caddr process))))]
-                              [light (normalise (len2 templight) templight)]
+                              [light (normalise (len2 (car templight)) (car templight))]
+                              [intensity (/ (cdr templight) samples)]
                               [state (send (car process) state)]
                               [I-am (material-ambient state)]
                               [I-d (material-diffuse state)]
-                              [InF (+ I-am  (* I-d (max (dot (neg light) (caddr process)) 0)))]]
+                              [InF (+ I-am  (* I-d intensity (max (dot (neg light) (caddr process)) 0)))]]
                          (multC  InF col)]))])
 
 (define (check-hit stat ray1 obj)
