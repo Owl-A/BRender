@@ -17,7 +17,7 @@
     [init-field [sampling-pts (repeat samples
                  (lambda (acc) (cons (add (scale (* r (random)) (randdir)) c) acc)) '())]]
     (define/public (final-dir pt Scene)
-      (foldr (lambda (x y) ;(subs y x))
+      (foldr (lambda (x y)
                [let* [[dir (subs pt x)]
                      [doubt (check-hit 'no (make-ray x dir)
                                      (get-field objects Scene))]]
