@@ -46,8 +46,6 @@
 (define (scale k l)
   (foldr (lambda (x y) (cons (* k x) y)) '() l))
 
-;; THIS IS FOLDR (not sparta)!!!!
-
 
 (define (len2 l)
   (dot l l))

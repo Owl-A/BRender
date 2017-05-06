@@ -117,5 +117,5 @@
        [from '(6 0 4)]
        [to '(15 0 4)]
        [temp_y '(0 1 0)]
-       [image-wid 1200]
-       [image-hgt 900]))
+       [image-wid 400]
+       [image-hgt 300]))
